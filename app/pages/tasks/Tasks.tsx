@@ -2,7 +2,9 @@ import { AnimationControls, motion } from 'framer-motion';
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Col, Layout, Menu, Row } from 'antd';
+import axios from 'axios';
+
+import { Col, Layout, Menu, Row, message } from 'antd';
 import { Button, ButtonGroup } from '@mui/material';
 
 import {
@@ -179,6 +181,25 @@ function Tasks() {
                 </Button>
                 <Button
                   onClick={async () => {
+                    const indexResult = await axios
+                      .get(
+                        `/sequence?=amino_acid_seq=${sequenceAreaRef.current.value}`,
+                      )
+                      .then((result) => {
+                        return result.data;
+                      })
+                      .catch((error) => {
+                        console.error(error);
+                        message.error('请求序列查询失败');
+                        throw new Error('请求序列查询失败');
+                      });
+                      if(indexResult.success){
+                        message.info("该序列已存在于数据库中")
+                      }
+                      else{
+                        message.info("序列不存在")
+                      }
+                    //
                     const result = await handlePrediction(
                       sequenceAreaRef.current.value,
                     );
