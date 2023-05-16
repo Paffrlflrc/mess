@@ -193,12 +193,32 @@ function Tasks() {
                         message.error('请求序列查询失败');
                         throw new Error('请求序列查询失败');
                       });
-                      if(indexResult.success){
-                        message.info("该序列已存在于数据库中")
+                    if (indexResult.success) {
+                      if (indexResult.msg === '序列存在') {
+                        message.info('序列存在');
+                      } else if (indexResult.msg === '序列不存在') {
+                        message.info('序列未录入');
+                        message.info('正在录入新序列');
+                        axios
+                          .post('/sequence', {
+                            data: {
+                              amino_acid_seq: sequenceAreaRef.current.value,
+                            },
+                          })
+                          .then((result) => {
+                            if (result.data.success) {
+                              message.success('新序列上传成功');
+                            }
+                          })
+                          .catch((error) => {
+                            console.error(error);
+                            message.error('序列上传失败');
+                            throw new Error('序列上传失败');
+                          });
                       }
-                      else{
-                        message.info("序列不存在")
-                      }
+                    } else {
+                      message.info('查询失败');
+                    }
                     //
                     const result = await handlePrediction(
                       sequenceAreaRef.current.value,

@@ -5,7 +5,11 @@ axiosPolling(axios, { retryLimit: 10 });
 
 const handlePrediction = async (input: string): Promise<string> => {
   const { data: result } = await axios
-    .post(`/prediction?sequence=${input}`)
+    .post('/prediction?sequence', {
+      data: {
+        amino_acid_seq: input,
+      },
+    })
     .catch((reason) => {
       // eslint-disable-next-line no-console
       console.error(reason);
